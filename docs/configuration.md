@@ -443,6 +443,7 @@ keeps its default directories.
 | OpenHands CLI         | `~/.openhands/conversations/`                                                                                                                                    | Per-conversation `base_state.json` + `events/*.json`                                                                                                          |
 | Omnigent              | `~/.omnigent/`                                                                                                                                                   | SQLite `chat.db`, one session per conversation                                                                                                                |
 | Pi                    | `~/.pi/agent/sessions/`                                                                                                                                          | JSONL per session                                                                                                                                             |
+| Hax | `~/.local/state/hax/sessions/` (or `$XDG_STATE_HOME/hax/sessions/`) | Version 1 JSONL below `<encoded-cwd>/` |
 | Tau                   | `~/.tau/sessions/`                                                                                                                                               | JSONL transcripts under `<project>/`, with metadata `index.jsonl` excluded                                                                                    |
 | Prime Agent           | `~/.prime/agent/sessions/`                                                                                                                                       | Flat Pi-family JSONL sessions                                                                                                                                 |
 | StepCode              | `~/.stepcode/agent/sessions/`                                                                                                                                    | JSONL per session                                                                                                                                             |
@@ -520,6 +521,22 @@ Prime Agent support targets the current flat session layout in v0.7.0. That
 release migrates the older per-project layout when Prime Agent opens its session
 store, so open the current Prime Agent once before syncing a legacy archive with
 AgentsView.
+
+Hax sessions appear as **Hax**, independently of Pi. AgentsView reads hax
+format version 1 from `~/.local/state/hax/sessions/`, or
+`$XDG_STATE_HOME/hax/sessions/` when set. Override the sessions root with
+`HAX_SESSIONS_DIR` or `[agents.hax].dirs`:
+
+```toml
+[agents.hax]
+dirs = ["/path/to/hax/sessions"]
+```
+
+Undo records remove live conversation turns without erasing their billed usage.
+Forks retain inherited conversation context without billing the copied usage
+again. Hax does not record per-message or per-request wall-clock timestamps;
+usage is attributed to the session start. Readable reasoning text is shown, but
+opaque reasoning payloads and inline images are not imported.
 
 Tau stores multiple session transcripts in each project directory under
 `~/.tau/sessions/`. AgentsView reads `.jsonl` files directly below those project

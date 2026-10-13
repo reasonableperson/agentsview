@@ -43,6 +43,7 @@ const (
 	AgentVSCopilot      AgentType = "visualstudio-copilot"
 	AgentPi             AgentType = "pi"
 	AgentTau            AgentType = "tau"
+	AgentHax            AgentType = "hax"
 	AgentPrimeAgent     AgentType = "prime-agent"
 	AgentOMP            AgentType = "omp"
 	AgentOMO            AgentType = "omo"
@@ -550,6 +551,16 @@ var Registry = []AgentDef{
 		DefaultDirs:       []string{".pi/agent/sessions"},
 		IDPrefix:          "pi:",
 		FileBased:         true,
+	},
+	{
+		Type:        AgentHax,
+		DisplayName: "Hax",
+		EnvVar:      "HAX_SESSIONS_DIR",
+		ConfigKey:   "hax_dirs",
+		DefaultDirs: []string{".local/state/hax/sessions"},
+		IDPrefix:    "hax:",
+		FileBased:   true,
+		Usage:       UsageCapabilities{NoPerMessageTokenData: true},
 	},
 	{
 		Type:        AgentTau,

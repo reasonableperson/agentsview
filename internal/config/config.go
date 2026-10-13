@@ -1214,6 +1214,11 @@ func Default() (Config, error) {
 				dirs = []string{filepath.Join(stateHome, "evener")}
 			}
 		}
+		if def.Type == parser.AgentHax {
+			if stateHome := os.Getenv("XDG_STATE_HOME"); stateHome != "" {
+				dirs = []string{filepath.Join(stateHome, "hax", "sessions")}
+			}
+		}
 		// CRUSH_GLOBAL_DATA and XDG_DATA_HOME override Crush's default
 		// data directory following the upstream XDG conventions.
 		if def.Type == parser.AgentCrush && root == "" {

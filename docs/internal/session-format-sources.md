@@ -4134,6 +4134,39 @@ schemas keep their existing ordering behavior.
   parent capture with unchanged fork-object reuse; metadata remains
   replaceable.
 
+## Hax (`hax`)
+
+- **Format:** Version 1 append-only JSONL under
+  `$XDG_STATE_HOME/hax/sessions/<encoded-cwd>/` (default
+  `~/.local/state/hax/sessions/`). A `type: session` header identifies the
+  conversation; `kind` records carry messages, reasoning, tool calls/results,
+  and usage. `selection` records replace the active model settings. `undo`
+  records cut the live history by typed user-prompt count. Fork headers carry
+  `forked_from`; copied context is marked `inherited`.
+- **Evidence:** `source`.
+- **Upstream:** Clone `https://github.com/OleksandrChekhovskyi/hax.git` at
+  `9fe48c4a3a1469b63c27b9d1c83ff0539fb459f0`;
+  [session persistence](https://github.com/OleksandrChekhovskyi/hax/blob/9fe48c4a3a1469b63c27b9d1c83ff0539fb459f0/src/session.c),
+  [undo semantics](https://github.com/OleksandrChekhovskyi/hax/blob/9fe48c4a3a1469b63c27b9d1c83ff0539fb459f0/src/provider.c),
+  [state paths](https://github.com/OleksandrChekhovskyi/hax/blob/9fe48c4a3a1469b63c27b9d1c83ff0539fb459f0/src/system/path.c),
+  and [format reference](https://github.com/OleksandrChekhovskyi/hax/blob/9fe48c4a3a1469b63c27b9d1c83ff0539fb459f0/docs/sessions.md)
+  checked 2026-10-13. The producer identifies itself as v0.6.0 and emits format
+  version 1.
+- **Usage and cost:** Each `turn_usage` footer records one served request,
+  including retries and compaction. `input` includes cached and cache-written
+  tokens; `in_tokens` is the uncached input count. Legacy footers without
+  `in_tokens` use `max(input - cached - cache_write, 0)`. `cost_total` is the
+  producer's dollar cost, with `cost_estimated` distinguishing catalog estimates;
+  absent cost falls through to AgentsView pricing. Undone requests remain billed,
+  but inherited fork footers are excluded. Requests have no wall-clock timestamp,
+  so usage is attributed to the recorded session start, not an invented request
+  time.
+- **Agentsview:** `internal/parser/hax.go` and `hax_provider.go` read live history
+  and separate usage events. `hax_test.go`, `internal/config/config_hax_test.go`,
+  and `internal/sync/hax_test.go` cover parsing, root overrides, source lookup,
+  replay, tool pairing, and undo replacement. Per-message timestamps, encrypted
+  reasoning payloads, and inline images are not reconstructed.
+
 ## Tau (`tau`)
 
 - **Format:** Tau stores one JSONL transcript per session below

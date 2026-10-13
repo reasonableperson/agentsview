@@ -38,6 +38,7 @@ describe("KNOWN_AGENTS", () => {
       "pi",
       "stepcode",
       "tau",
+      "hax",
       "prime-agent",
       "qwen",
       "qwenpaw",
